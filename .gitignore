@@ -1,0 +1,16 @@
+# pycache
+/api/__pycache__/
+/extmeal/__pycache__/
+*.pyc
+
+# db
+/db.sqlite3
+
+# secret key
+/extmeal/secret.key
+
+# migrations
+/api/migrations/
+
+# .idea
+/.idea/*
