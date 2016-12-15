@@ -6,7 +6,7 @@ from django.db import models
 class Food(models.Model):
     """食品"""
     name = models.CharField('食品名', max_length=255, blank=False)
-    url = models.CharField('URL', max_length=255, default="")
+    item_id = models.IntegerField('商品ID', default=0)
     price = models.IntegerField('価格', default=0)
     gram = models.IntegerField('グラム', default=0)
 
