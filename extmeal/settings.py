@@ -26,7 +26,7 @@ with open('extmeal/secret.key') as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['60.91.62.154', 'localhost', '127.0.0.1']
 
 
 # Application definition
