@@ -97,13 +97,16 @@ def item_list(request):
 def login(request):
     """ログインの可否を返す"""
     try:
-        login_id = request.POST['login_id']
-        password = request.POST['password']
+        # login_id = request.POST['login_id']
+        # password = request.POST['password']
+        auth = request.POST['auth']
+        json_data = json.loads(auth)
     except MultiValueDictKeyError or ValueError:
         return HttpResponseNotFound(content_type='application/json')
 
     url = 'https://netsuper.daiei.co.jp/index.php?secure=1'
-    data = ('submit_member_login%%5B%%5D=member_login&loginCookie=1&login_id=%s&password=%s' % (login_id, password)).encode('utf-8')
+    data = ('submit_member_login%%5B%%5D=member_login&loginCookie=1&login_id=%s&password=%s' % (json_data["login_id"], json_data["password"])).encode('utf-8')
+    # data = ('submit_member_login%%5B%%5D=member_login&loginCookie=1&login_id=%s&password=%s' % (login_id, password)).encode('utf-8')
     req = urllib.request.Request(url, data)
 
     opener = urllib.request.build_opener()
