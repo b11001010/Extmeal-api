@@ -37,6 +37,7 @@ def food_list(request):
 
 @csrf_exempt
 def echo(request):
+    """ただのEcho"""
     try:
         data = request.POST['userAuth']
     except MultiValueDictKeyError or ValueError:
@@ -45,4 +46,15 @@ def echo(request):
     return HttpResponse(data, content_type='application/json')
 
 
+@csrf_exempt
+def item_list(request):
+    """年齢，性別，活動レベルを受け取り最適な食品お組み合わせを返す"""
+    try:
+        age = request.POST['age']
+        gender = request.POST['gender']
+        activity_level = request.POST['activity_level']
 
+    except MultiValueDictKeyError or ValueError:
+        return HttpResponseNotFound(content_type='application/json')
+
+    return HttpResponse('hoge', content_type='application/json')
