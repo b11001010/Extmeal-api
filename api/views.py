@@ -20,12 +20,12 @@ def food_list(request):
             'item_id': food.item_id,
             'price': food.price,
             'gram': food.gram,
-        """三大栄養素"""
+
             'energy': food.energy,
             'protein': food.protein,
             'fat': food.fat,
             'carbohydrates': food.carbohydrates,
-        """ビタミン"""
+
             'vitaminA': food.vitaminA,
             'vitaminD': food.vitaminD,
             'vitaminE': food.vitaminE,
@@ -39,7 +39,7 @@ def food_list(request):
             'pantothenic': food.pantothenic,
             'biotin': food.biotin,
             'vitaminC': food.vitaminC,
-        """ミネラル"""
+
             'sodium': food.sodium,
             'potassium': food.potassium,
             'calcium': food.calcium,
