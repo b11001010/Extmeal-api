@@ -1,4 +1,8 @@
 import json
+
+import urllib.request
+from http import cookiejar
+
 from collections import OrderedDict
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -8,6 +12,9 @@ from django.shortcuts import render
 from api.models import Food
 # Create your views here.
 
+
+# cookie管理
+COOKIE = cookiejar.CookieJar()
 
 def food_list(request):
     """食品のリストのJSONを返す"""
@@ -78,10 +85,34 @@ def item_list(request):
         age = request.POST['age']
         gender = request.POST['gender']
         activity_level = request.POST['activity_level']
-
-
-
     except MultiValueDictKeyError or ValueError:
         return HttpResponseNotFound(content_type='application/json')
 
+    # TODO: 最適な食品の組み合わせを求める
+
     return HttpResponse('hoge', content_type='application/json')
+
+
+@csrf_exempt
+def login(request):
+    """ログインの可否を返す"""
+    try:
+        login_id = request.POST['login_id']
+        password = request.POST['password']
+    except MultiValueDictKeyError or ValueError:
+        return HttpResponseNotFound(content_type='application/json')
+
+    url = 'https://netsuper.daiei.co.jp/index.php?secure=1'
+    data = ('submit_member_login%%5B%%5D=member_login&loginCookie=1&login_id=%s&password=%s' % (login_id, password)).encode('utf-8')
+    req = urllib.request.Request(url, data)
+
+    opener = urllib.request.build_opener()
+    opener.add_handler(urllib.request.HTTPCookieProcessor(COOKIE))
+
+    response = opener.open(req).read().decode('utf-8')
+    if '配達便の選択' in response:
+        """ログイン成功"""
+        return JsonResponse({"result": True})
+    else:
+        """ログイン失敗"""
+        return JsonResponse({"result": False})
