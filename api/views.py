@@ -38,8 +38,11 @@ def food_list(request):
 @csrf_exempt
 def echo(request):
     try:
-        data = request.POST['data']
+        data = request.POST['userAuth']
     except MultiValueDictKeyError or ValueError:
         return HttpResponseNotFound(content_type='application/json')
 
     return HttpResponse(data, content_type='application/json')
+
+
+
