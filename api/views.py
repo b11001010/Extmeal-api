@@ -17,7 +17,6 @@ def food_list(request):
         food_dict = {
             'id': food.id,
             'name': food.name,
-            'url': food.url,
             'price': food.price,
             'energy': food.energy,
             'carbohydrates': food.carbohydrates,
