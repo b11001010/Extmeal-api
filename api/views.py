@@ -17,17 +17,42 @@ def food_list(request):
         food_dict = {
             'id': food.id,
             'name': food.name,
+            'item_id': food.item_id,
             'price': food.price,
+            'gram': food.gram,
+        """三大栄養素"""
             'energy': food.energy,
-            'carbohydrates': food.carbohydrates,
             'protein': food.protein,
             'fat': food.fat,
-            'calcium': food.calcium,
-            'iron': food.iron,
+            'carbohydrates': food.carbohydrates,
+        """ビタミン"""
             'vitaminA': food.vitaminA,
+            'vitaminD': food.vitaminD,
+            'vitaminE': food.vitaminE,
+            'vitaminK': food.vitaminK,
             'vitaminB1': food.vitaminB1,
             'vitaminB2': food.vitaminB2,
+            'niacin': food.niacin,
+            'vitaminB6': food.vitaminB6,
+            'vitaminB12': food.vitaminB12,
+            'folate': food.folate,
+            'pantothenic': food.pantothenic,
+            'biotin': food.biotin,
             'vitaminC': food.vitaminC,
+        """ミネラル"""
+            'sodium': food.sodium,
+            'potassium': food.potassium,
+            'calcium': food.calcium,
+            'magnesium': food.magnesium,
+            'phosphorus': food.phosphorus,
+            'iron': food.iron,
+            'zinc': food.zinc,
+            'copper': food.copper,
+            'manganese': food.manganese,
+            'iodine': food.iodine,
+            'selenium': food.selenium,
+            'chromium': food.chromium,
+            'molybdenum': food.molybdenum,
         }
 
         foods.append(food_dict)
@@ -53,6 +78,8 @@ def item_list(request):
         age = request.POST['age']
         gender = request.POST['gender']
         activity_level = request.POST['activity_level']
+
+
 
     except MultiValueDictKeyError or ValueError:
         return HttpResponseNotFound(content_type='application/json')
