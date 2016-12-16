@@ -116,3 +116,8 @@ def login(request):
     else:
         """ログイン失敗"""
         return JsonResponse({"result": False})
+
+
+@csrf_exempt
+def submit(request):
+    """購入処理"""

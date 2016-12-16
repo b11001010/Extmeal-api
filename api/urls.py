@@ -8,4 +8,6 @@ urlpatterns = [
     url(r'^echo/$', views.echo, name='echo'),
     # Login
     url(r'^login/$', views.login, name='login'),
+    # item_list
+    url(r'^item_list/$', views.login, name='login'),
 ]
