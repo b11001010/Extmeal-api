@@ -9,5 +9,5 @@ urlpatterns = [
     # Login
     url(r'^login/$', views.login, name='login'),
     # item_list
-    url(r'^item_list/$', views.login, name='login'),
+    url(r'^item_list/$', views.item_list, name='item_list'),
 ]
