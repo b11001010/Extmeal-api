@@ -4,8 +4,8 @@ from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.datastructures import MultiValueDictKeyError
 from django.http import HttpResponse, HttpResponseNotFound
-from api.models import Food
 
+from api.models import Food
 from api.lib import select_foods
 from api.lib import daiei_client
 
@@ -95,7 +95,7 @@ def login(request):
 
 @csrf_exempt
 def item_list(request):
-    """年齢，性別，活動レベルを受け取り最適な食品お組み合わせを返す"""
+    """年齢，性別，活動レベルを受け取り，人類に最適な栄養素が取れる食品の組み合わせを返す"""
     try:
         data = request.POST['userInfo']
     except MultiValueDictKeyError or ValueError:
@@ -103,7 +103,7 @@ def item_list(request):
 
     json_data = json.loads(data)
 
-    nutritionParam = select_foods.getNutritionParam()
+    nutrition_param = select_foods.getNutritionParam()
 
     age = json_data['age']  # 年齢
     gender = json_data['gender']  # 性別 1は男2は女
@@ -111,12 +111,53 @@ def item_list(request):
 
     res = select_foods.foodNutr(age, gender, activity_level)
 
-    jsonString = select_foods.simulatedAnnealing(nutritionParam, res)
+    json_string = select_foods.simulatedAnnealing(nutrition_param, res)
 
-
-    return HttpResponse(jsonString, content_type='application/json')
+    return HttpResponse(json_string, content_type='application/json')
 
 
 @csrf_exempt
 def submit(request):
     """購入処理"""
+    # login() → select_delivery_date() → submit_order() はこの順番で呼ぶこと（cookieを正しく構築するため）
+
+    try:
+        auth = request.POST['auth']
+        json_data = json.loads(auth)
+    except MultiValueDictKeyError or ValueError:
+        return HttpResponseNotFound(content_type='application/json')
+
+    # ログイン
+    login_id = json_data["login_id"]
+    password = json_data["password"]
+    login(login_id, password)
+
+    # 配達可能な時刻の中で，一番早く配達される時刻を選択
+    date = min(daiei_client.get_delivery_dates())
+
+    # 配達時刻の確定
+    daiei_client.select_delivery_date(date)
+
+    # バスケットへの商品追加処理
+    # アイテムID, 個数
+    items = [
+        (1207497, 3),
+        (1107316, 4),
+        (1065148, 2),
+        (1072904, 1)
+    ]
+
+    # 高速化のためにバケットへの追加処理を並列化
+    # あんまり同時リクエスト数 が大きくなるとエラーが出るかも
+    threads = []
+    for item_id, num in items:
+        thread = daiei_client.AddToBasketThread(item_id, num)
+        thread.start()
+        threads.append(thread)
+    [thread.join() for thread in threads]
+
+    # 注文内容の確認（receiptの中に詳細な価格情報）
+    receipt = daiei_client.check_order()
+
+    # 注文の確定（本当に宅配されるので実行する際は注意）
+    # dump_html(submit_order(), 'submit.html')

@@ -1,3 +1,7 @@
+"""
+Created by Sho Sugiura
+"""
+
 from urllib.parse import urlencode
 from urllib.request import urlopen, Request
 from urllib.error import URLError

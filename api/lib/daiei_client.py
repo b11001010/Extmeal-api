@@ -1,3 +1,6 @@
+"""
+Created by Kosuke Hiramatsu (@ommadawn)
+"""
 from urllib import request
 from bs4 import BeautifulSoup
 from http import cookiejar
@@ -188,40 +191,40 @@ def dump_html(response, output_file):
         f.write(response)
 
 
-def main():
-    # login() → select_delivery_date() → submit_order() はこの順番で呼ぶこと（cookieを正しく構築するため）
-
-    # ログイン
-    login_id = '********'
-    password = '********'
-    login(login_id, password)
-
-    # 配達可能な時刻の中で，一番早く配達される時刻を選択
-    date = min(get_delivery_dates())
-
-    # 配達時刻の確定
-    select_delivery_date(date)
-
-    # バスケットへの商品追加処理
-    # アイテムID, 個数
-    items = [
-        (1207497, 3),
-        (1107316, 4),
-        (1065148, 2),
-        (1072904, 1)
-    ]
-
-    # 高速化のためにバケットへの追加処理を並列化
-    # あんまり同時リクエスト数 が大きくなるとエラーが出るかも
-    threads = []
-    for item_id, num in items:
-        thread = AddToBasketThread(item_id, num)
-        thread.start()
-        threads.append(thread)
-    [thread.join() for thread in threads]
-
-    # 注文内容の確認（receiptの中に詳細な価格情報）
-    receipt = check_order()
-
-    # 注文の確定（本当に宅配されるので実行する際は注意）
-    # dump_html(submit_order(), 'submit.html')
+# def main():
+#     # login() → select_delivery_date() → submit_order() はこの順番で呼ぶこと（cookieを正しく構築するため）
+#
+#     # ログイン
+#     login_id = '********'
+#     password = '********'
+#     login(login_id, password)
+#
+#     # 配達可能な時刻の中で，一番早く配達される時刻を選択
+#     date = min(get_delivery_dates())
+#
+#     # 配達時刻の確定
+#     select_delivery_date(date)
+#
+#     # バスケットへの商品追加処理
+#     # アイテムID, 個数
+#     items = [
+#         (1207497, 3),
+#         (1107316, 4),
+#         (1065148, 2),
+#         (1072904, 1)
+#     ]
+#
+#     # 高速化のためにバケットへの追加処理を並列化
+#     # あんまり同時リクエスト数 が大きくなるとエラーが出るかも
+#     threads = []
+#     for item_id, num in items:
+#         thread = AddToBasketThread(item_id, num)
+#         thread.start()
+#         threads.append(thread)
+#     [thread.join() for thread in threads]
+#
+#     # 注文内容の確認（receiptの中に詳細な価格情報）
+#     receipt = check_order()
+#
+#     # 注文の確定（本当に宅配されるので実行する際は注意）
+#     # dump_html(submit_order(), 'submit.html')
