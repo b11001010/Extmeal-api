@@ -123,29 +123,36 @@ def submit(request):
 
     try:
         auth = request.POST['auth']
-        json_data = json.loads(auth)
+        item_ids = request.POST['item_ids']
     except MultiValueDictKeyError or ValueError:
         return HttpResponseNotFound(content_type='application/json')
 
+    auth_data = json.loads(auth)
+    item_ids_data = json.loads(item_ids)
+
     # ログイン
-    login_id = json_data["login_id"]
-    password = json_data["password"]
-    login(login_id, password)
+    login_id = auth_data["login_id"]
+    password = auth_data["password"]
+    daiei_client.login(login_id, password)
 
     # 配達可能な時刻の中で，一番早く配達される時刻を選択
-    date = min(daiei_client.get_delivery_dates())
+    delivery_dates = daiei_client.get_delivery_dates()
+    date = min(delivery_dates)
 
     # 配達時刻の確定
     daiei_client.select_delivery_date(date)
 
     # バスケットへの商品追加処理
     # アイテムID, 個数
-    items = [
-        (1207497, 3),
-        (1107316, 4),
-        (1065148, 2),
-        (1072904, 1)
-    ]
+    items = []
+    for item_id in item_ids_data:
+        items.append((int(item_id), 1))
+
+    # items = [
+    #     (1207497, 1),
+    #     (1107316, 1),
+    #     (1065148, 1),
+    # ]
 
     # 高速化のためにバケットへの追加処理を並列化
     # あんまり同時リクエスト数 が大きくなるとエラーが出るかも
@@ -157,7 +164,7 @@ def submit(request):
     [thread.join() for thread in threads]
 
     # 注文内容の確認（receiptの中に詳細な価格情報）
-    receipt = daiei_client.check_order()
+    receipt = daiei_client.get_order_info()
 
-    # 注文の確定（本当に宅配されるので実行する際は注意）
-    # dump_html(submit_order(), 'submit.html')
+    receipt_json = json.dumps(receipt, ensure_ascii=False)
+    return HttpResponse(receipt_json, content_type='application/json')

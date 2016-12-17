@@ -15,7 +15,7 @@ import json
 def getNutritionParam():
     paramDict = {}
     try:
-        apiUrl = "http://localhost/api/food_list/"
+        apiUrl = "http://localhost:8000/api/food_list/"
 
         with urlopen(apiUrl) as response:
             jsonString = response.read()                       # jsonデータの読込
@@ -139,7 +139,7 @@ def simulatedAnnealing(foodNutritionList, avgNutritionList):
     sumNutritionList = {}
 
     # 【定数宣言】
-    FOOD_NUM = 20                       # 食品数
+    FOOD_NUM = 40                       # 食品数
     NUTRITION_NUM = len(nutritionNames) #栄養素種数
     INIT_TEMPERATURE = 1.0              # 初期温度
     CONV_TEMPERATURE = 0.1              # 収束温度

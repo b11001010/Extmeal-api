@@ -1,5 +1,5 @@
 """
-Created by Kosuke Hiramatsu (@ommadawn)
+Created by Kosuke Hiramatsu
 """
 from urllib import request
 from bs4 import BeautifulSoup
@@ -25,7 +25,7 @@ class AddToBasketThread(Thread):
         self.error = None
 
     def run(self):
-        url = 'https://netsuper.daiei.co.jp/0338/item/basket.php'
+        url = 'https://netsuper.daiei.co.jp/0304/item/basket.php'
         data = ('submit_addbasket%%5B%d%%5D=&e695b0e9878f%%5B%d%%5D=%d' % (self.item_id, self.item_id, self.num)).encode('utf-8')
         req = request.Request(url, data)
 
@@ -66,7 +66,7 @@ def get_delivery_dates():
     配達可能な日時の取得
     @return [配達可能な日時, ...]
     """
-    url = 'https://netsuper.daiei.co.jp/0338/select_delivery.php'
+    url = 'https://netsuper.daiei.co.jp/0304/select_delivery.php'
     req = request.Request(url)
 
     opener = request.build_opener()
@@ -87,7 +87,7 @@ def select_delivery_date(date):
     @param date 配達日時
     @return HTML
     """
-    url = 'https://netsuper.daiei.co.jp/0338/select_delivery.php'
+    url = 'https://netsuper.daiei.co.jp/0304/select_delivery.php'
     data = ('default_event=doneDelivery&delivery=%s&submit_doneDelivery=%%E3%%80%%80' % date).encode('utf-8')
     req = request.Request(url, data)
 
@@ -106,7 +106,7 @@ def get_order():
     注文確定に関する情報を取得する
     @return (HTML, statefulID)
     """
-    url = 'https://netsuper.daiei.co.jp/0338/order/order.php'
+    url = 'https://netsuper.daiei.co.jp/0304/order/order.php'
     req = request.Request(url)
 
     opener = request.build_opener()
@@ -168,7 +168,7 @@ def submit_order():
     @return HTML
     """
     statefulID = get_order()[1]
-    url = 'https://netsuper.daiei.co.jp/0338/order/order.php'
+    url = 'https://netsuper.daiei.co.jp/0304/order/order.php'
     data = ('default_event=&StateFulID=%s&submit_order=%%E3%%80%%80' % statefulID).encode('utf-8')
     req = request.Request(url, data)
 
@@ -191,40 +191,26 @@ def dump_html(response, output_file):
         f.write(response)
 
 
-# def main():
-#     # login() → select_delivery_date() → submit_order() はこの順番で呼ぶこと（cookieを正しく構築するため）
-#
-#     # ログイン
-#     login_id = '********'
-#     password = '********'
-#     login(login_id, password)
-#
-#     # 配達可能な時刻の中で，一番早く配達される時刻を選択
-#     date = min(get_delivery_dates())
-#
-#     # 配達時刻の確定
-#     select_delivery_date(date)
-#
-#     # バスケットへの商品追加処理
-#     # アイテムID, 個数
-#     items = [
-#         (1207497, 3),
-#         (1107316, 4),
-#         (1065148, 2),
-#         (1072904, 1)
-#     ]
-#
-#     # 高速化のためにバケットへの追加処理を並列化
-#     # あんまり同時リクエスト数 が大きくなるとエラーが出るかも
-#     threads = []
-#     for item_id, num in items:
-#         thread = AddToBasketThread(item_id, num)
-#         thread.start()
-#         threads.append(thread)
-#     [thread.join() for thread in threads]
-#
-#     # 注文内容の確認（receiptの中に詳細な価格情報）
-#     receipt = check_order()
-#
-#     # 注文の確定（本当に宅配されるので実行する際は注意）
-#     # dump_html(submit_order(), 'submit.html')
+def get_order_info():
+    html = get_order()[0]
+    soup = BeautifulSoup(html, 'html.parser')
+
+    texts = soup.findAll('td', attrs={'class': 'text_right_pr10'})
+    delivery_charge = texts[1].text.strip()
+    total = texts[4].text.strip()
+
+    receipt = {
+        'total': total,
+        'delivery_charge': delivery_charge,
+        'items': [],
+    }
+
+    for item_name in soup.findAll('a', attrs={'class': 'order_font_name'}):
+        receipt['items'].append(
+            {
+                'item_name': item_name.text.strip(),
+                'price': item_name.findNext(attrs={'class': 'order_txt_c'}).text.strip()
+            }
+        )
+
+    return receipt

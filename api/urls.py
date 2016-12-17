@@ -10,4 +10,6 @@ urlpatterns = [
     url(r'^login/$', views.login, name='login'),
     # item_list
     url(r'^item_list/$', views.item_list, name='item_list'),
+    # submit
+    url(r'^submit/$', views.submit, name='submit'),
 ]
