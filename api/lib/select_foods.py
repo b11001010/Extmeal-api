@@ -126,7 +126,7 @@ def metropolis(deltaGap, T_k):
     return math.exp(-deltaGap / T_k)
 
 
-def simulatedAnnealing(foodNutritionList, avgNutritionList):
+def simulatedAnnealing(foodNutritionList, avgNutritionList, food_num):
     # 【変数宣言】
     nutritionNames = [
         "protein",      "fat",          "carbohydrates",    "vitaminA",     "vitaminD",
@@ -139,7 +139,7 @@ def simulatedAnnealing(foodNutritionList, avgNutritionList):
     sumNutritionList = {}
 
     # 【定数宣言】
-    FOOD_NUM = 40                       # 食品数
+    FOOD_NUM = food_num                 # 食品数
     NUTRITION_NUM = len(nutritionNames) #栄養素種数
     INIT_TEMPERATURE = 1.0              # 初期温度
     CONV_TEMPERATURE = 0.1              # 収束温度

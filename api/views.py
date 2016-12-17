@@ -1,4 +1,5 @@
 import json
+import sqlite3
 
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -111,7 +112,14 @@ def item_list(request):
 
     res = select_foods.foodNutr(age, gender, activity_level)
 
-    json_string = select_foods.simulatedAnnealing(nutrition_param, res)
+    # DBのレコード数（食品数）取得
+    conn = sqlite3.connect('db.sqlite3')
+    c = conn.cursor()
+    c.execute('select count(*) from api_food;')
+    count = c.fetchall()
+    c.close()
+    conn.close()
+    json_string = select_foods.simulatedAnnealing(nutrition_param, res, count[0][0])
 
     return HttpResponse(json_string, content_type='application/json')
 
