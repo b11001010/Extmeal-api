@@ -11,7 +11,7 @@ import json
 def getNutritionParam():
     paramDict = {}
     try:
-        apiUrl = "http://localhost:8000/api/food_list/"
+        apiUrl = "http://localhost/api/food_list/"
 
         with urlopen(apiUrl) as response:
             jsonString = response.read()                       # jsonデータの読込
